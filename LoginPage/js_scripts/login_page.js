@@ -2,7 +2,6 @@ LoginWindow = Ext.extend(Ext.Window, {
 	UserFirstName: null,
 	UserLastName: null,
 	UserTroop: null,
-	
 	LoginButton: null,
 
 	Init: function() {					
@@ -22,7 +21,7 @@ LoginWindow = Ext.extend(Ext.Window, {
 			bodyStyle: 'padding:10px 10px 10px 10px',
 			autoHeight: true,
 			defaults: {
-				anchor: '100%'
+			    anchor: '100%'
 			},			
 			
 			items: [
@@ -41,9 +40,16 @@ LoginWindow = Ext.extend(Ext.Window, {
 				
         innerPanel.addButton(this.LoginButton, this.onLogin, this);		
 		
-		this.add(innerPanel);
+        this.add(innerPanel);
 	},
 	
+	tools: [
+        {
+	        id: 'close',
+	        hidden: true
+        }
+	],
+
 	onLogin: function () {
 	},
 	
