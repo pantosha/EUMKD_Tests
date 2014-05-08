@@ -7,19 +7,19 @@ var uFirstName = null,
 	uTroop = null;
 
 
-Number.prototype.inRange = function (a, b) {
-	return (this <= a) && (this > b);
-}
+Number.prototype.inRange = function(a, b) {
+    return (this <= a) && (this > b);
+};
 
 function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function ShuffleTest(test) {
-	var result = {
-		title: test.title,
-		questions: []
-	}
+    var result = {
+        title: test.title,
+        questions: []
+    };
 	
 	var maxIndex = 0;
 	for (var i = 1; i < test.questions.length; i++)
@@ -40,7 +40,7 @@ NavigationControl = Ext.extend(Ext.FormPanel, {
 	AnswerButton: null,
 	ScipButton: null,
 
-	bodyStyle: 'padding:0px 0px 0px 0px',
+	bodyStyle: 'padding: 0px 0px 0px 0px',
 	autoHeight: true,
 	defaults: {
 		anchor: '100%'
@@ -82,7 +82,8 @@ Ext.onReady(function () {
 	
 	// var test = JSON.parse(Base64.decode(getTest()));
 	var test = Ext.util.JSON.decode(Base64.decode(getTest()));
-	
+    test.questions.splice(3);
+
 	var oQuestionTabs = [];
 	for (var i = 0; i < test.questions.length; i++) {
 		var oQuestionPanel = new Ext.Panel({
@@ -143,7 +144,7 @@ Ext.onReady(function () {
 					tag: 'img',
 					src: test.questions[i].image
 				},
-				bodyStyle: 'padding:0px 0px 0px 0px'
+				bodyStyle: 'padding: 0px 0px 0px 0px'
 			});
 			
 			var oImagePanel = new Ext.Panel({
@@ -156,14 +157,15 @@ Ext.onReady(function () {
 			});
 			
 			itemsToAdd.push(oImagePanel);
-		}		
-				
-		oQuestionTabs.push(new Ext.Panel({
-			autoScroll: true,		
-			split: true,
-			layout: 'border',		
-			bodyStyle: 'padding:0px 0px 0px',
-			title: (i + 1).toString(),
+		}
+
+	    oQuestionTabs.push(new Ext.Panel({
+	        autoScroll: true,
+	        split: true,
+	        layout: 'border',
+	        bodyStyle: 'padding: 0px 0px 0px',
+	        title: (i + 1).toString(),
+            iconCls: 'icon-not-answered',
 			items: itemsToAdd
 		}));
 	}	
@@ -202,77 +204,53 @@ Ext.onReady(function () {
 	}
 	
 	function CheckTest() {
-		var correctAnswers = 0;
+	    var questionsCount = oTabPanel.items.length;
+	    var incorrentAnswers = [];
 		
-		for (var i = 0; i < oTabPanel.items.length; i++) {
+		for (var i = 0; i < questionsCount; i++) {
 			var questionPanel = oTabPanel.get(i).get(1).get(0);
 			
-			var isCorrectAnswer = true;
 			for (var j = 0; j < questionPanel.items.length; j++) {
-				if (questionPanel.items.items[j].checked !== test.questions[i].variants[j].correct) {
-					isCorrectAnswer = false;
+			    if (questionPanel.items.items[j].checked !== test.questions[i].variants[j].correct) {
+			        incorrentAnswers.push(i);
 					break;
 				}
 			}
-			if (isCorrectAnswer == true) {
-				correctAnswers++;
-			}
-			// switch ( questionPanel.getXType() ) {
-				// case 'checkboxgroup':
-					// break;
-				// case 'radiogroup':
-					// break;
-			// }
 		}
+
+	    updateUi(incorrentAnswers);
+
+	    var correctAnswersCount = questionsCount - incorrentAnswers.length;
 		
 		runner.stop(task);
-		
-		var rightAnswersPercent = parseFloat(correctAnswers.toString()) / test.questions.length * 100.0;
-		
-		// ToDo: Упростить код
-		var mark;
 
-		if ((rightAnswersPercent).inRange(100, 90)) {
-			mark = 10;
-		} else
-		if ((rightAnswersPercent).inRange(90, 80)) {
-			mark = 9;
-		} else
-		if ((rightAnswersPercent).inRange(80, 70)) {
-			mark = 8;
-		} else
-		if ((rightAnswersPercent).inRange(70, 60)) {
-			mark = 7;
-		} else
-		if ((rightAnswersPercent).inRange(60, 50)) {
-			mark = 6;
-		} else
-		if ((rightAnswersPercent).inRange(50, 40)) {
-			mark = 5;
-		} else
-		if ((rightAnswersPercent).inRange(40, 30)) {
-			mark = 4;
-		} else
-		if ((rightAnswersPercent).inRange(30, 20)) {
-			mark = 3;
-		} else {
-			mark = 2
-		}
+		var mark = Math.ceil(correctAnswersCount / questionsCount * 10);
+	    if (mark > 10)
+	        mark = 10;   
 		
-		var userInfo = uFirstName + ' ' + uLastName + ' ' + uTroop;
-		var resultString = 'Правильных ответов: ' + correctAnswers.toString() + '<br />' +
-												'Всего вопросов: ' + test.questions.length + '<br />' +
-												'Ваша оценка: ' + mark.toString();
+	    var userInfo = uFirstName + ' ' + uLastName + ' ' + uTroop;
+		var resultString = 'Правильных ответов: ' + correctAnswersCount + '<br />' +
+												'Всего вопросов: ' + questionsCount + '<br />' +
+												'Ваша оценка: ' + mark;
 		Ext.MessageBox.show({
 			title: userInfo,
 			msg: resultString,
 			buttons: Ext.MessageBox.OK,
 			fn: function (btn) {
-				window.location.reload();
+				
 			}			
 		});
 	}
 	
+	function updateUi(incorrectAnswers) {
+	    var questionsCount = oTabPanel.items.length;
+        for (var i = 0; i < questionsCount; i++) {
+            var panel = oTabPanel.items.items[i];
+            var iconCls = incorrectAnswers.indexOf(i) < 0 ? 'icon-yes' : 'icon-no';
+            panel.setIconClass(iconCls);
+        }
+    }
+
 	var oTabPanel = new Ext.TabPanel({
 		activeItem: 0,
 		resizeTabs: true,
@@ -334,11 +312,12 @@ Ext.onReady(function () {
 					return;
 				}
 			}
-			
+
+		    at.setIconClass('icon-answered');
 			at.disable();
 			
 			if (oTabPanel.getNextTab() === false) {
-				CheckTest();
+		        CheckTest();
 			}
 		},
 		
@@ -386,11 +365,11 @@ Ext.onReady(function () {
 		
 		var userInfo = uFirstName + ' ' + uLastName + ' ' + uTroop;
 		oTimerPanel.setTitle('Осталось времени: ' + new Date(timeLeft).format('i:s') + '   ' + userInfo);
-	} 
-	var task = {
-	    run: updateClock,
-	    interval: 1000 //1 second
 	}
+    var task = {
+        run: updateClock,
+        interval: 1000 //1 second
+    };
 	runner = new Ext.util.TaskRunner();
 	runner.start(task);
 

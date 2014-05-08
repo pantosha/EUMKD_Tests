@@ -1,0 +1,15 @@
+.icon-yes {
+	background-image: url('../images/yes.png');
+}
+
+.icon-no {
+	background-image: url('../images/no.png');
+}
+
+.icon-answered {
+	background-image: url('../images/answered.png');
+}
+
+.icon-not-answered {
+	background-image: url('../images/not-answered.png');
+}
