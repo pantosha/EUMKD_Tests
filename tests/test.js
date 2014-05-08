@@ -273,7 +273,8 @@ Ext.onReady(function () {
 					continue;
 				}
 				
-				if (oTabPanel.get(i).disabled === false) {
+				var questionPanel = oTabPanel.get(i).get(1).get(0);
+				if (questionPanel.disabled === false) {
 					toAdd.push(i);
 				}
 			}
@@ -314,7 +315,7 @@ Ext.onReady(function () {
 			}
 
 		    at.setIconClass('icon-answered');
-			at.disable();
+		    questionPanel.disable();
 			
 			if (oTabPanel.getNextTab() === false) {
 		        CheckTest();
