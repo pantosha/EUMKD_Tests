@@ -82,7 +82,6 @@ Ext.onReady(function () {
 	
 	// var test = JSON.parse(Base64.decode(getTest()));
 	var test = Ext.util.JSON.decode(Base64.decode(getTest()));
-    test.questions.splice(3);
 
 	var oQuestionTabs = [];
 	for (var i = 0; i < test.questions.length; i++) {
